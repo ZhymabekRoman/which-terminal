@@ -57,6 +57,8 @@ jobs:
           cd /tmp/v
           make
           sudo ./v symlink
+        env:
+          GITHUB_ACTIONS: ''
 
       - name: Checkout code
         uses: actions/checkout@v4
