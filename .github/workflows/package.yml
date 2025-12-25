@@ -53,12 +53,12 @@ jobs:
 
       - name: Install V compiler
         run: |
+          echo "::stop-commands::build-v"
           git clone https://github.com/vlang/v /tmp/v
           cd /tmp/v
           make
           sudo ./v symlink
-        env:
-          GITHUB_ACTIONS: ''
+          echo "::build-v::"
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -85,12 +85,12 @@ jobs:
 
       - name: Install V compiler
         run: |
+          echo "::stop-commands::build-v"
           git clone https://github.com/vlang/v /tmp/v
           cd /tmp/v
           make
           ./v symlink
-        env:
-          GITHUB_ACTIONS: ''
+          echo "::build-v::"
 
       - name: Checkout code
         uses: actions/checkout@v4
