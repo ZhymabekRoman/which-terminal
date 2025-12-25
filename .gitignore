@@ -1,0 +1,18 @@
+# Build outputs
+which-terminal
+*.exe
+
+# V compiler cache
+*.tmp.c
+*.dSYM/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
