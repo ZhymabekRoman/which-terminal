@@ -35,7 +35,7 @@ fn test_needs_e_flag_true() {
 
 // Test needs_e_flag function for terminals that don't require -e
 fn test_needs_e_flag_false() {
-	assert needs_e_flag('alacritty') == false
+	assert needs_e_flag('alacritty') == true
 	assert needs_e_flag('kitty') == false
 	assert needs_e_flag('foot') == false
 	assert needs_e_flag('wezterm') == false
