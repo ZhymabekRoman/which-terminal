@@ -1,0 +1,129 @@
+name: Package Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-arch:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+
+    steps:
+      - name: Update system and install dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel git vlang
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create build user
+        run: |
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          chown -R builder:builder .
+
+      - name: Build package
+        run: |
+          su - builder -c "cd $GITHUB_WORKSPACE && makepkg -cf --noconfirm"
+
+      - name: Upload Arch package
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-package
+          path: "*.pkg.tar.zst"
+
+  build-deb:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential debhelper devscripts
+
+      - name: Install V compiler
+        run: |
+          git clone https://github.com/vlang/v /tmp/v
+          cd /tmp/v
+          make
+          sudo ./v symlink
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build package
+        run: |
+          dpkg-buildpackage -us -uc -b
+
+      - name: Upload Debian package
+        uses: actions/upload-artifact@v4
+        with:
+          name: debian-package
+          path: "../*.deb"
+
+  build-rpm:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+
+    steps:
+      - name: Install dependencies
+        run: |
+          dnf install -y rpm-build rpmdevtools make gcc git
+
+      - name: Install V compiler
+        run: |
+          git clone https://github.com/vlang/v /tmp/v
+          cd /tmp/v
+          make
+          ./v symlink
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup RPM build tree
+        run: |
+          rpmdev-setuptree
+          mkdir -p ~/rpmbuild/SOURCES
+          tar czf ~/rpmbuild/SOURCES/which-terminal-${GITHUB_REF_NAME#v}.tar.gz \
+            --transform "s,^,which-terminal-${GITHUB_REF_NAME#v}/," \
+            --exclude=.git \
+            .
+
+      - name: Build RPM package
+        run: |
+          rpmbuild -ba which-terminal.spec
+
+      - name: Upload RPM package
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm-package
+          path: "~/rpmbuild/RPMS/x86_64/*.rpm"
+
+  create-release:
+    needs: [build-arch, build-deb, build-rpm]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: packages
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            packages/arch-package/*.pkg.tar.zst
+            packages/debian-package/*.deb
+            packages/rpm-package/*.rpm
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

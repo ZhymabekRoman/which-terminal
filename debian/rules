@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	make build-prod
+
+override_dh_auto_test:
+	make test || true
+
+override_dh_auto_install:
+	install -Dm755 which-terminal debian/which-terminal/usr/bin/which-terminal
+	ln -s which-terminal debian/which-terminal/usr/bin/x-terminal-emulator

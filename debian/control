@@ -1,0 +1,21 @@
+Source: which-terminal
+Section: x11
+Priority: optional
+Maintainer: ZhymabekRoman <robanokssamit@yandex.kz>
+Build-Depends: debhelper-compat (= 13), vlang, make
+Standards-Version: 4.6.0
+Homepage: https://github.com/ZhymabekRoman/which-terminal
+Vcs-Git: https://github.com/ZhymabekRoman/which-terminal.git
+Vcs-Browser: https://github.com/ZhymabekRoman/which-terminal
+
+Package: which-terminal
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Provides: x-terminal-emulator
+Description: Universal terminal emulator launcher
+ which-terminal is a tool that detects and runs the best available terminal
+ emulator on your system. It prioritizes terminals based on the display server
+ (X11 or Wayland) and running processes.
+ .
+ This package provides both the which-terminal binary and an x-terminal-emulator
+ symlink for compatibility with Debian's alternatives system.
