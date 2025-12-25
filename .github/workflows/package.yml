@@ -13,19 +13,24 @@ jobs:
       image: archlinux:latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Update system and install dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git vlang
-
-      - name: Checkout code
-        uses: actions/checkout@v4
+          pacman -S --noconfirm base-devel git sudo
 
       - name: Create build user
         run: |
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder .
+
+      - name: Install yay and vlang
+        run: |
+          su - builder -c "cd /tmp && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm"
+          su - builder -c "yay -S --noconfirm vlang"
 
       - name: Build package
         run: |

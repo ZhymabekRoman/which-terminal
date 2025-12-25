@@ -2,7 +2,7 @@ Source: which-terminal
 Section: x11
 Priority: optional
 Maintainer: ZhymabekRoman <robanokssamit@yandex.kz>
-Build-Depends: debhelper-compat (= 13), vlang, make
+Build-Depends: debhelper-compat (= 13), make
 Standards-Version: 4.6.0
 Homepage: https://github.com/ZhymabekRoman/which-terminal
 Vcs-Git: https://github.com/ZhymabekRoman/which-terminal.git
