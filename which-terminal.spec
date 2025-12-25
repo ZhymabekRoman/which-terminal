@@ -7,7 +7,6 @@ License:        MIT
 URL:            https://github.com/ZhymabekRoman/which-terminal
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
-BuildRequires:  vlang
 BuildRequires:  make
 BuildRequires:  gcc
 ExclusiveArch:  x86_64
