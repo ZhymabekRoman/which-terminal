@@ -87,6 +87,28 @@ jobs:
           name: debian-package
           path: "*.deb"
 
+  build-binary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Install V
+        uses: vlang/setup-v@v1
+        with:
+          check-latest: true
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build production binary
+        run: make build-prod
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: which-terminal-ubuntu
+          path: which-terminal*
+
   build-rpm:
     runs-on: ubuntu-latest
     container:
@@ -130,7 +152,7 @@ jobs:
           path: "~/rpmbuild/RPMS/x86_64/*.rpm"
 
   create-release:
-    needs: [build-arch, build-deb, build-rpm]
+    needs: [build-arch, build-deb, build-rpm, build-binary]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     timeout-minutes: 10
@@ -148,6 +170,7 @@ jobs:
             packages/arch-package/*.pkg.tar.zst
             packages/debian-package/*.deb
             packages/rpm-package/*.rpm
+            packages/which-terminal-ubuntu/which-terminal*
           draft: false
           prerelease: false
         env:
