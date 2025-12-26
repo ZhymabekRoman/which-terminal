@@ -3,6 +3,8 @@ Version:        0.1.0
 Release:        1%{?dist}
 Summary:        Universal terminal emulator launcher
 
+%global debug_package %{nil}
+
 License:        MIT
 URL:            https://github.com/ZhymabekRoman/which-terminal
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
