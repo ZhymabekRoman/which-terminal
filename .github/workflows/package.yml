@@ -100,8 +100,9 @@ jobs:
         run: |
           rpmdev-setuptree
           mkdir -p ~/rpmbuild/SOURCES
-          tar czf ~/rpmbuild/SOURCES/which-terminal-${GITHUB_REF_NAME#v}.tar.gz \
-            --transform "s,^,which-terminal-${GITHUB_REF_NAME#v}/," \
+          VERSION=$(grep -E '^Version:' which-terminal.spec | awk '{print $2}')
+          tar czf ~/rpmbuild/SOURCES/which-terminal-${VERSION}.tar.gz \
+            --transform "s,^,which-terminal-${VERSION}/," \
             --exclude=.git \
             .
 
