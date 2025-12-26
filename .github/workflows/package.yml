@@ -35,6 +35,17 @@ jobs:
 
       - name: Build package
         run: |
+          # Create source tarball for makepkg
+          VERSION=$(grep -E '^pkgver=' PKGBUILD | cut -d'=' -f2)
+          PKGNAME=$(grep -E '^pkgname=' PKGBUILD | cut -d'=' -f2)
+          mkdir -p /tmp/${PKGNAME}-${VERSION}
+          cp -r . /tmp/${PKGNAME}-${VERSION}/
+          rm -rf /tmp/${PKGNAME}-${VERSION}/.git
+          tar czf ${PKGNAME}-${VERSION}.tar.gz -C /tmp ${PKGNAME}-${VERSION}
+          chown builder:builder ${PKGNAME}-${VERSION}.tar.gz
+          # Update PKGBUILD to use local source
+          sed -i "s|source=(.*)|source=(\"${PKGNAME}-${VERSION}.tar.gz\")|" PKGBUILD
+          chown -R builder:builder .
           su - builder -c "cd $GITHUB_WORKSPACE && makepkg -cf --noconfirm"
 
       - name: Upload Arch package
